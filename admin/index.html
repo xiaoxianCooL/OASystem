@@ -110,18 +110,25 @@
 
       // //原生写法:
       // //创建一个异步对象
-
+      var xhr = new XMLHttpRequest();
       // //初始化设置 填入数据类型get 地址信息
-
+      xhr.open("get", "http://localhost:8080/api/v1/admin/user/info");
       // //设置头部 获取本地储存的token
-
+      xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
       // //监听响应
-
-      //   //判断状态 是否完全执行完毕
-
-      //     //把返回的数据转成JSON数据
-
-      // //提交请求
+      xhr.onreadystatechange = function() {
+        //判断状态 是否完全执行完毕
+        if (xhr.status === 200 && xhr.readyState === 4) {
+          //把返回的数据转成JSON数据
+          var res = JSON.parse(xhr.responseText);
+        }
+        // else {
+        //   localStorage.removeItem("token");
+        //   location.href = "./login.html";
+        // }
+      };
+      xhr.send();
+      //提交请求
     </script>
   </body>
 </html>
