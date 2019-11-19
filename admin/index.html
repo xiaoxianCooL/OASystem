@@ -89,46 +89,52 @@
       //思路:登录界面跳转过来之后,立即发送ajax请求数据,把数据渲染到页面
       //jquery写法:
       //入口函数
-
-      //立即发送ajax请求 获取数据渲染页面
-
-      //事件数据类型
-
-      //基地地址+接口地址
-
-      //请求成功执行的函数
-
-      //判断参数res状态码 如果是200 则可以认为获取成功
-
-      //把获取到的数据渲染到页面上
-
-      //给按钮绑定退出事件
-
-      //删除本地存储中的token
-
-      //回跳到登录页面
+      $(function() {
+        //立即发送ajax请求 获取数据渲染页面
+        $.ajax({
+          //事件数据类型
+          type: "get",
+          //基地地址+接口地址
+          url: "http://localhost:8080/api/v1/admin/user/info",
+          //请求成功执行的函数
+          success(res) {
+            //判断参数res状态码 如果是200 则可以认为获取成功
+            if (res.code === 200) {
+              //把获取到的数据渲染到页面上
+              console.log(res);
+            }
+          }
+        });
+        //给按钮绑定退出事件
+        $(".logout").on("click", function() {
+          //删除本地存储中的token
+          localStorage.removeItem("token");
+          //回跳到登录页面
+          location.href = "./login.html";
+        });
+      });
 
       // //原生写法:
       // //创建一个异步对象
-      var xhr = new XMLHttpRequest();
-      // //初始化设置 填入数据类型get 地址信息
-      xhr.open("get", "http://localhost:8080/api/v1/admin/user/info");
-      // //设置头部 获取本地储存的token
-      xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
-      // //监听响应
-      xhr.onreadystatechange = function() {
-        //判断状态 是否完全执行完毕
-        if (xhr.status === 200 && xhr.readyState === 4) {
-          //把返回的数据转成JSON数据
-          var res = JSON.parse(xhr.responseText);
-        }
-        // else {
-        //   localStorage.removeItem("token");
-        //   location.href = "./login.html";
-        // }
-      };
-      xhr.send();
-      //提交请求
+      // var xhr = new XMLHttpRequest();
+      // // //初始化设置 填入数据类型get 地址信息
+      // xhr.open("get", "http://localhost:8080/api/v1/admin/user/info");
+      // // //设置头部 获取本地储存的token
+      // xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+      // // //监听响应
+      // xhr.onreadystatechange = function() {
+      //   //判断状态 是否完全执行完毕
+      //   if (xhr.status === 200 && xhr.readyState === 4) {
+      //     //把返回的数据转成JSON数据
+      //     var res = JSON.parse(xhr.responseText);
+      //   }
+      //   // else {
+      //   //   localStorage.removeItem("token");
+      //   //   location.href = "./login.html";
+      //   // }
+      // };
+      // xhr.send();
+      // //提交请求
     </script>
   </body>
 </html>
