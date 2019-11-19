@@ -88,7 +88,7 @@
     </div>
     <!-- /.modal -->
     <!-- 引入接口文件 -->
-
+    <script src="./libs/http.js"></script>
     <script>
       //入口函数
       $(function() {
@@ -114,11 +114,12 @@
             return false;
           }
           //如果输入了账号密码 发送ajax请求
+          console.log(window);
           $.ajax({
             //数据类型
             type: "post",
             //基地链接+接口
-            url: "http://localhost:8080/api/v1/admin/user/login",
+            url: window.jieKou.user_login,
             //传入账号密码参数到后台验证
             data: {
               username: $txt,

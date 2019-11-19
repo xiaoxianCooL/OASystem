@@ -84,7 +84,7 @@
       </div>
     </div>
     <!-- 引入接口文件 -->
-
+    <script src="./libs/http.js"></script>
     <script>
       //思路:登录界面跳转过来之后,立即发送ajax请求数据,把数据渲染到页面
       //jquery写法:
@@ -95,7 +95,7 @@
           //事件数据类型
           type: "get",
           //基地地址+接口地址
-          url: "http://localhost:8080/api/v1/admin/user/info",
+          url: window.jieKou.user_info,
           //请求成功执行的函数
           success(res) {
             //判断参数res状态码 如果是200 则可以认为获取成功
