@@ -101,7 +101,11 @@
             //判断参数res状态码 如果是200 则可以认为获取成功
             if (res.code === 200) {
               //把获取到的数据渲染到页面上
-              console.log(res);
+              $(".user_info > img").attr(res.data.userPic);
+              $(".user_info > span").html(
+                "欢迎&nbsp;&nbsp;" + res.data.nickname
+              );
+              $(".user_center_link > img").attr(res.data.userPic);
             }
           }
         });
@@ -113,28 +117,6 @@
           location.href = "./login.html";
         });
       });
-
-      // //原生写法:
-      // //创建一个异步对象
-      // var xhr = new XMLHttpRequest();
-      // // //初始化设置 填入数据类型get 地址信息
-      // xhr.open("get", "http://localhost:8080/api/v1/admin/user/info");
-      // // //设置头部 获取本地储存的token
-      // xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
-      // // //监听响应
-      // xhr.onreadystatechange = function() {
-      //   //判断状态 是否完全执行完毕
-      //   if (xhr.status === 200 && xhr.readyState === 4) {
-      //     //把返回的数据转成JSON数据
-      //     var res = JSON.parse(xhr.responseText);
-      //   }
-      //   // else {
-      //   //   localStorage.removeItem("token");
-      //   //   location.href = "./login.html";
-      //   // }
-      // };
-      // xhr.send();
-      // //提交请求
     </script>
   </body>
 </html>
