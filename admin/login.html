@@ -58,9 +58,35 @@
         </div>
       </div>
     </div>
-
     <!-- 模态框 -->
-
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">友情提示</h4>
+          </div>
+          <div class="modal-body">
+            <p></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              确认
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <!-- 引入接口文件 -->
 
     <script>
@@ -82,7 +108,9 @@
             .trim();
           //判断账号密码是否为空
           if ($txt === "" || $pass === "") {
-            alert("你的账号或者密码不能为空!");
+            // alert("你的账号或者密码不能为空!");
+            $(".modal-body").text("您的账号或密码不能为空!");
+            $("#myModal").modal();
             return false;
           }
           //如果输入了账号密码 发送ajax请求
@@ -101,11 +129,16 @@
             //回调函数
             success: function(res) {
               //(抽离处理 不管成功失败 模态框先打印结果 再判断是否执行跳转)
+              $(".modal-body").html(res.msg);
+              $("#myModal").modal();
               if (res.code === 200) {
-                //登录成功后把token保存到本地存储中
-                localStorage.setItem("token", res.token);
-                //跳转到管理页面
-                location.href = "./index.html";
+                //给模态框添加自带hidden.bs.modal事件 此事件在模态框被隐藏（并且同时在 CSS 过渡效果完成）之后被触发。
+                $("#myModal").on("hidden.bs.modal", function(e) {
+                  //登录成功后把token保存到本地存储中
+                  localStorage.setItem("token", res.token);
+                  //跳转到管理页面
+                  location.href = "./index.html";
+                });
               }
             }
           });
