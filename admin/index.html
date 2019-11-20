@@ -94,6 +94,8 @@
           }
         }
       });
+
+
       //给按钮绑定退出事件
       $(".logout").on("click", function () {
         //删除本地存储中的token
@@ -102,6 +104,28 @@
         location.href = "./login.html";
       });
     });
+
+
+    //左菜单栏 添加tab栏样式 给leve101这个div添加点击事件
+    //div.level01是一个位数组
+    $('div.level01').on('click', function () {
+      //this是点击的那个一个元素 添加类名 其他兄弟元素删除类名(排它)
+      $(this).addClass('active').siblings().removeClass('active');
+
+      if ($(this).index() === 1) {
+        //判断如果this的索引值为1 1,toggle,让li出来 
+        $('ul.level02').toggle();
+        //2.因为点击a才能跳转 选中第一个li下面的a调用原生方法默认点击第一个li
+        $('ul.level02 li:eq(0)>a')[0].click();
+        //3.箭头点击切 旋转方向
+        $(this).find('b').toggleClass('rotate0');
+      }
+    });
+
+    //给.level02添加点击事件  让ul下的li 也有样式排他效果
+    $('ul.level02 li').on('click', function () {
+      $(this).addClass('active').siblings('li').removeClass('active');
+    })
   </script>
 </body>
 
