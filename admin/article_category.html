@@ -35,7 +35,7 @@
                         <td>奇趣事</td>
                         <td>funny</td>
                         <td class="text-center">
-                            <a href="javascript:void(0)" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
+                            <a href="#" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
                             <a href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
                         </td>
                     </tr>
@@ -43,12 +43,40 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="javascript:void(0)" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
+                            <a href="#" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
                                 data-target="#myModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
             </table>
+        </div>
+    </div>
+    <!--  模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">新增文章分类</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">文章分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">文字分类别名:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm">确认</button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- 引入接口文件 -->
@@ -60,8 +88,8 @@
             <td>{{$value.name}}</td>
             <td>{{$value.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0)" data-id={{$value.id}} data-toggle="modal"
-                    class=" btn btn-info btn-xs">编辑</a>
+                <a href="javascript:void(0)" data-id={{$value.id}} data-toggle="modal" class=" btn btn-info btn-xs"
+                    data-target="#myModal">编辑</a>
                 <a href="javascript:void(0)" data-id={{$value.id}} class="btn btn-danger btn-xs">删除</a>
             </td>
         </tr>
@@ -71,6 +99,9 @@
         //入口函数
         $(function () {
             //从服务器发送get请求获取数据渲染到页面
+            $("a").click(function (e) {
+                e.preventDefault()
+            })
             $.get({
                 //获取用户信息的接口
                 url: BigNew.category_list,
@@ -84,6 +115,26 @@
                     $('tbody').html(htmlSta);
                 }
             });
+            //点击某一个按钮后触发此模态框事件
+            $('#myModal').on('show.bs.modal', function (e) {
+                // console.log(e.relatedTarget) 点击那个按钮 哪个触发此事件
+                //判断点击的是新增还是编辑
+                if (e.relatedTarget === $('#xinzengfenlei')[0]) {
+                    //如果点击的是新增 修改模态框标题文本 为 '新增文章分类'
+                    $('#exampleModalLabel').text('新增文章分类');
+                    //给按钮加点样式 因为有两个按钮使用排它
+                    $('#btn-confirm').text('新增').addClass('btn-success').removeClass('btn-primary');
+                } else {
+                    //如果点击的是编辑 修改模态框标题文本 为 '编辑文章分类'
+                    $('#exampleModalLabel').text('编辑文章分类');
+                    //给按钮加点样式 因为有两个按钮使用排它
+                    $('#btn-confirm').text('编辑').addClass('btn-primary').removeClass('btn-success');
+                }
+
+            })
+
+
+
 
         })
     </script>
