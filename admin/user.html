@@ -91,49 +91,64 @@
           }
         }
       });
+
+
       //为上传按钮绑定change事件 当选择好图片后,在页面显示预览效果
       $("#exampleInputFile").on("change", function () {
         // console.log(this);
         //将选择的图片转换成一个url地址 files返回的是伪数组 用[0]提取对象
         var imgIcon = this.files[0];
-        // console.log(imgIcon)
         //因为window有URL对象 调用此对象createobjectURL方法,将图片的信息转换为url地址
         var url = URL.createObjectURL(imgIcon);
         console.log(url);
+
+        // console.log(url);
         //把预览图片的路径替换为上传的那一张
         $(".user_pic").attr('src', url);
       });
+
+
       //给修改的按钮注册点击事件
-      $('btn-edit').on('click', function (e) {
-          //阻止submit按钮默认刷新行为
-          e.preventDefault();
-          //获取form表单信息
-          //获取form表单 formData只能处理原生的DOM对象
-          var form = $('form')[0];
-          var userData = new FormData(form);
-          //发送ajax请求提交form表单数据
-          $.post({
-              url: BigNew.user_edit,
-              data: userData,
-              //不需要设置请求头
-              contentType: false,
-              //不需要进行编码
-              processData: false,
-              //请求成功后执行函数
-              success: function (res) {
-                //判断参数res状态码 如果是200 则可以认为获取成功
-                if (res.code === 200) {
+      $('.btn-edit').on('click', function (e) {
+        //阻止submit按钮默认刷新行为
+        e.preventDefault();
+        //获取form表单信息
+        //获取form表单 formData只能处理原生的DOM对象
+        var form = $('#form')[0];
+        var userData = new FormData(form);
+        //发送ajax请求提交form表单数据
+        $.post({
+          url: BigNew.user_edit,
+          data: userData,
+          //不需要设置请求头
+          contentType: false,
+          //不需要进行编码
+          processData: false,
+          //请求成功后执行函数
+          success: function (res) {
+            //判断参数res状态码 如果是200 则可以认为获取成功
+            if (res.code === 200) {
+              // console.log(res);
+              $.ajax({
+                type: 'get',
+                url: BigNew.user_info,
+                success: function (res) {
                   //把获取到的数据旋绕到页面上
                   //刷新子页面的父级页面元素
-                  parent.$(".user_info > img").attr(res.data.userPic);
-                  parent.$(".user_info > span").html("欢迎&nbsp;&nbsp;" + res.data.nickname);
-                  parent.$(".user_center_link > img").attr(res.data.userPic);
+                  console.log(res);
+
+                  parent.$(".user_info > img").attr('src', res.data.userPic);
+                  parent.$(".user_info > span").html(
+                    "欢迎&nbsp;&nbsp;" + res.data.nickname
+                  );
+                  parent.$(".user_center_link > img").attr('src', res.data.userPic);
                   //刷新子页面
-                  location.reload();
+                  parent.window.location.reload();
                 }
-              }
+              })
             }
-          })
+          }
+        })
       })
     });
   </script>
