@@ -116,9 +116,15 @@
         //获取form表单 formData只能处理原生的DOM对象
         var form = $('#form')[0];
         var userData = new FormData(form);
-        //发送ajax请求提交form表单数据
+        // console.log(form);
+        // console.log(userData);
+
+
+        //发送ajax请求提交form表单数据  修改服务器数据
         $.post({
+          //修改用户信息接口
           url: BigNew.user_edit,
+          //向服务器提交表单数据
           data: userData,
           //不需要设置请求头
           contentType: false,
@@ -129,14 +135,17 @@
             //判断参数res状态码 如果是200 则可以认为获取成功
             if (res.code === 200) {
               // console.log(res);
+              //发送ajax请求 请求服务器返回修改后的数据 渲染更新到页面上
               $.ajax({
+                //get数据类型
                 type: 'get',
+                //获取用户信息接口
                 url: BigNew.user_info,
+                //获取成功后执行函数
                 success: function (res) {
-                  //把获取到的数据旋绕到页面上
+                  //把获取到的数据渲染到页面上
                   //刷新子页面的父级页面元素
-                  console.log(res);
-
+                  // console.log(res);
                   parent.$(".user_info > img").attr('src', res.data.userPic);
                   parent.$(".user_info > span").html(
                     "欢迎&nbsp;&nbsp;" + res.data.nickname
@@ -147,6 +156,15 @@
                 }
               })
             }
+
+            //删除本地存储中的token
+            localStorage.removeItem("token");
+            // $("#myModal").on("hidden.bs.modal", function (e) {
+            //   //跳转到管理页面
+            //   location.href = "./index.html";
+            // })
+
+
           }
         })
       })

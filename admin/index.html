@@ -102,6 +102,7 @@
         localStorage.removeItem("token");
         //回跳到登录页面
         location.href = "./login.html";
+
       });
     });
 
@@ -110,7 +111,7 @@
     //div.level01是一个位数组
     $('div.level01').on('click', function () {
       //this是点击的那个一个元素 添加类名 其他兄弟元素删除类名(排它)
-      $(this).addClass('active').siblings().removeClass('active');
+      $(this).addClass('active').siblings('div').removeClass('active');
 
       if ($(this).index() === 1) {
         //判断如果this的索引值为1 1,toggle,让li出来 
@@ -124,6 +125,7 @@
 
     //给.level02添加点击事件  让ul下的li 也有样式排他效果
     $('ul.level02 li').on('click', function () {
+      //给当前this添加类名,其他兄弟去除类名
       $(this).addClass('active').siblings('li').removeClass('active');
     })
   </script>
