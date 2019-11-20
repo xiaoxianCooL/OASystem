@@ -1,140 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>文章列表</title>
-    <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/iconfont.css" />
-    <link rel="stylesheet" href="css/main.css" />
-    <script src="./libs/jquery-1.12.4.min.js"></script>
-  </head>
 
-  <body>
-    <div class="container-fluid">
-      <div class="common_title">
-        用户信息修改
-      </div>
-      <div class="container-fluid common_con">
-        <form class="form-horizontal article_form" id="form">
-          <div class="form-group">
-            <label for="inputEmail1" class="col-sm-2 control-label"
-              >用户名称：</label
-            >
-            <div class="col-sm-4">
-              <input
-                type="text"
-                name="username"
-                class="form-control username"
-                id="inputEmail1"
-                value="李思思"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputEmail2" class="col-sm-2 control-label"
-              >昵称：</label
-            >
-            <div class="col-sm-4">
-              <input
-                type="text"
-                name="nickname"
-                class="form-control nickname"
-                id="inputEmail2"
-                value="哈哈思"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputEmail3" class="col-sm-2 control-label"
-              >邮箱：</label
-            >
-            <div class="col-sm-4">
-              <input
-                type="text"
-                name="email"
-                class="form-control email"
-                id="inputEmail3"
-                value="520@163.com"
-              />
-            </div>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>文章列表</title>
+  <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/iconfont.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="./libs/jquery-1.12.4.min.js"></script>
+</head>
 
-          <div class="form-group">
-            <label for="inputPassword3" class="col-sm-2 control-label"
-              >用户图标：</label
-            >
-            <div class="col-sm-10">
-              <img src="images/2.jpg" alt="" class="user_pic" />
-              <input
-                style="display: block"
-                name="userPic"
-                type="file"
-                id="exampleInputFile"
-              />
-              <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
-              <br />
-              <label for="exampleInputFile">
-                <img
-                  src="./images/uploads_icon.jpg"
-                  style="height: 50px;"
-                  alt=""
-                />
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="inputEmail4" class="col-sm-2 control-label"
-              >密码：</label
-            >
-            <div class="col-sm-4">
-              <input
-                type="password"
-                name="password"
-                class="form-control password"
-                id="inputEmail4"
-                value="12345678"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-success btn-edit">
-                修改
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+<body>
+  <div class="container-fluid">
+    <div class="common_title">
+      用户信息修改
     </div>
-    <!-- 引入接口文件 -->
-    <script src="./libs/http.js"></script>
-    <script>
-      //入口函数
-      $(function() {
-        //当进入这个页面的时候 立即发送ajax请求拉取数据 渲染页面
-        $.get({
-          //写入个人信息接口
-          url: BigNew.user_detail,
-          //请求成功执行函数
-          success: function(res) {
-            //判断状态码 是否完全执行完毕
-            if (res.code === 200) {
-              //利用for in循环res的键和值
-              for (var key in res.data) {
-            //利用交集选择器把键和值 写到对应表单的属性上
-                $("input." + key).val(res.data[key]);
-              }
-              console.log(res.data);
-              //由于图片是不是input标签单独书写
-              $(".user_pic").attr("src", res.data.userPic);
+    <div class="container-fluid common_con">
+      <form class="form-horizontal article_form" id="form">
+        <div class="form-group">
+          <label for="inputEmail1" class="col-sm-2 control-label">用户名称：</label>
+          <div class="col-sm-4">
+            <input type="text" name="username" class="form-control username" id="inputEmail1" value="李思思" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail2" class="col-sm-2 control-label">昵称：</label>
+          <div class="col-sm-4">
+            <input type="text" name="nickname" class="form-control nickname" id="inputEmail2" value="哈哈思" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
+          <div class="col-sm-4">
+            <input type="text" name="email" class="form-control email" id="inputEmail3" value="520@163.com" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
+          <div class="col-sm-10">
+            <img src="images/2.jpg" alt="" class="user_pic" />
+            <input style="display: block" name="userPic" type="file" id="exampleInputFile" />
+            <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
+            <br />
+            <label for="exampleInputFile">
+              <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="" />
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail4" class="col-sm-2 control-label">密码：</label>
+          <div class="col-sm-4">
+            <input type="password" name="password" class="form-control password" id="inputEmail4" value="12345678" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-success btn-edit">
+              修改
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- 引入接口文件 -->
+  <script src="./libs/http.js"></script>
+  <script>
+    //入口函数
+    $(function () {
+      //当进入这个页面的时候 立即发送ajax请求拉取数据 渲染页面
+      $.get({
+        //写入个人信息接口
+        url: BigNew.user_detail,
+        //请求成功执行函数
+        success: function (res) {
+          //判断状态码 是否完全执行完毕
+          if (res.code === 200) {
+            //利用for in循环res的键和值
+            for (var key in res.data) {
+              //利用交集选择器把键和值 写到对应表单的属性上
+              $("input." + key).val(res.data[key]);
             }
+            // console.log(res.data);
+            //由于图片是不是input标签单独书写
+            $(".user_pic").attr('src', res.data.userPic);
           }
-        });
+        }
       });
-    </script>
-  </body>
+      //为上传按钮绑定change事件 当选择好图片后,在页面显示预览效果
+      $("#exampleInputFile").on("change", function () {
+        // console.log(this);
+        //将选择的图片转换成一个url地址 files返回的是伪数组 用[0]提取对象
+        var imgIcon = this.files[0];
+        // console.log(imgIcon)
+        //因为window有URL对象 调用此对象createobjectURL方法,将图片的信息转换为url地址
+        var url = URL.createObjectURL(imgIcon);
+        console.log(url);
+        //把预览图片的路径替换为上传的那一张
+        $(".user_pic").attr('src', url);
+      });
+    });
+  </script>
+</body>
+
 </html>
