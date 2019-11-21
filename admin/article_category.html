@@ -36,7 +36,7 @@
                         <td>funny</td>
                         <td class="text-center">
                             <a href="#" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
+                            <a href="javascript:void(0)" class="btn btn-danger btn-xs" id="CC">删除</a>
                         </td>
                     </tr>
                 </tbody>
@@ -92,7 +92,7 @@
             <td class="text-center">
                 <a href="javascript:void(0)" data-id={{$value.id}} data-toggle="modal" class=" btn btn-info btn-xs"
                     data-target="#myModal">编辑</a>
-                <a href="javascript:void(0)" data-id={{$value.id}} class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:void(0)" data-id={{$value.id}} class="btn btn-danger btn-xs btn-cc">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -100,24 +100,30 @@
     <script>
         //入口函数
         $(function () {
-            //从服务器发送get请求获取数据渲染到页面
+
+            //阻止a标签的默认冒泡事件
             $("a").click(function (e) {
                 e.preventDefault()
             })
-            $.get({
-                //获取用户信息的接口
-                url: BigNew.category_list,
-                //获取执行成功执行的函数
-                success: function (res) {
-                    // console.log(res);
-                    // 把数据传入模板
-                    const htmlSta = template('list', res);
-                    // console.log(htmlSta);
-                    //把模板数据渲染到tbody中
-                    $('tbody').html(htmlSta);
-                }
-            });
-            //点击某一个按钮后触发此模态框事件
+            //先调用一次
+            getDate();
+            //从服务器发送get请求获取数据渲染到页面(多次用到-所以封装)
+            function getDate() {
+                $.get({
+                    //获取用户信息的接口
+                    url: BigNew.category_list,
+                    //获取执行成功执行的函数
+                    success: function (res) {
+                        // console.log(res);
+                        // 把数据传入模板
+                        const htmlSta = template('list', res);
+                        // console.log(htmlSta);
+                        //把模板数据渲染到tbody中
+                        $('tbody').html(htmlSta);
+                    }
+                });
+            }
+            //点击某一个按钮后触发此模态框show.bs.modal事件
             $('#myModal').on('show.bs.modal', function (e) {
                 // console.log(e.relatedTarget) 点击那个按钮 哪个触发此事件
                 //判断点击的是新增还是编辑
@@ -135,7 +141,7 @@
 
                     //点击某一个编辑按钮的时候 获取储存在这个编辑按钮里面的id值 由于e是原生对象 先转JQ才可以调用attr方法
                     const cateId = $(e.relatedTarget).attr('data-id');
-                    console.log(cateId);
+                    // console.log(cateId);
                     //发送ajax请求获取get数据
                     $.get({
                         //文章类别搜索接口
@@ -146,11 +152,11 @@
                         },
                         //获取成功执行函数
                         success: function (res) {
-                            // console.log(res);
+                            // console.log(res.data[0].id);
                             // 判断状态码是否是200
                             if (res.code === 200) {
                                 // 把返回的id值存到隐藏域的属性上
-                                $('nbId').val(res.data[0].id);
+                                $('#nbId').val(res.data[0].id);
                                 //把返回的名字存到文章分类下
                                 $('#recipient-name').val(res.data[0].name);
                                 //把返回的文字数据存到文章别名下
@@ -161,9 +167,109 @@
                 }
             })
 
+            //利用事件委派给新增/编辑按钮注册点击事件
+            $('.modal-footer').on('click', '#btn-confirm', function () {
+                // console.log('1');
+                //获取文章类别名字 和 内容
+                var name = $('#recipient-name').val();
+                var slug = $('#message-text').val();
+                // console.log(name, slug);
+                //判断按钮如果是新增
+                if ($(this).text() === '新增') {
+                    // alert('新增')
+                    // 新增按钮
+                    //发送post请求 把数据发送给服务器 
+                    $.post({
+                        //新增文章类别接口
+                        url: BigNew.category_add,
+                        //把文章类名 别名 上传到服务器修改
+                        data: {
+                            name: name,
+                            slug: slug
+                        },
+                        //发送请求完毕 执行函数
+                        success: function (res) {
+                            //判断状态码201 则认真执行完毕
+                            if (res.code === 201) {
+                                // console.log(res.msg);
+                                //调用模态框的事件 把模态框隐藏
+                                $('#myModal').modal('hide');
+                                // alert(res.msg)
+                                //调用封装的获取最新页面数据 刷新了页面的数据
+                                getDate();
+                            }
+                        }
+                    })
+                } else {
+                    alert('编辑')
+                    //编辑按钮
+                    //获取之前储存在表单隐藏域的id
+                    var id = $('#nbId').val();
+                    // console.log(id);
+
+                    $.post({
+                        // 接口:8、编辑文章类别
+                        url: BigNew.category_edit,
+                        //传入接口参数id name slug 
+                        data: {
+                            // 把编辑的文章隐藏域id传给服务器
+                            id: id,
+                            //把编辑后的文章名传给服务器
+                            name: name,
+                            //把编辑后的文章内容传给服务器
+                            slug: slug
+                        },
+                        //编辑请求发送成功后 执行函数
+                        success: function (res) {
+                            // console.log(res);
+                            //如果状态码为200 则认为执行完毕
+                            if (res.code === 200) {
+                                //调用模态框方法 隐藏模态框
+                                $('#myModal').modal('hide');
+                                //调用封装的获取最新页面数据 刷新了页面的数据
+                                getDate();
+                            }
+                        }
+                    })
+                }
+            })
 
 
 
+
+            // console.log($('tbody > .btn-cc'));
+
+            //(事件委派)删除按钮 删除文章类别
+            $('tbody').on('click', '.btn-cc', function () {
+                // console.log('点击');
+                //调用DOM confirm()方法 提示用户 是或者否 返回 布尔值 用于判断是否执行
+                const xZ = confirm('请注意!此操作删除将不可恢复,您确定要删除吗?');
+                //因为事件委派是个伪数组 用this确定点击的是哪一个文章 并调用JQuery attr方法传入一个参数 获取属性值(id)
+                const dateId = $(this).attr('data-id');
+                // console.log(xZ);
+
+                //用户点击后 判断confirm 返回的值 如果是true!执行
+                if (xZ === true) {
+                    //发送服务器请求
+                    $.post({
+                        //9、删除文章类别接口
+                        url: BigNew.category_delete,
+                        //向服务器发送要删除的文章的id值
+                        data: {
+                            id: dateId
+                        },
+                        //请求发送完毕 执行函数
+                        success: function (res) {
+                            // console.log(res);
+                            //如果状态码为204 则认为完全执行完毕 
+                            if (res.code === 204) {
+                                //再次请求获取页面数据 刷新页面
+                                getDate();
+                            }
+                        }
+                    })
+                }
+            })
         })
     </script>
 </body>
