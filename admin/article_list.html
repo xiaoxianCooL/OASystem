@@ -13,6 +13,9 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 引入bootstrap的js文件 -->
+    <!-- 引入jQuery的分页插件js文件 -->
+    <!-- 引入模板引擎js文件 -->
 </head>
 
 <body>
@@ -25,11 +28,11 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-                            <option value="">所有分类</option>
+                            <!-- <option value="">所有分类</option>
                             <option>未分类</option>
                             <option>奇趣事</option>
                             <option>会生活</option>
-                            <option>爱旅行</option>
+                            <option>爱旅行</option> -->
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option value="">所有状态</option>
@@ -55,7 +58,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <!-- <tr>
                         <td>王积千造统最头</td>
                         <td>杰克</td>
                         <td>奇趣事</td>
@@ -65,13 +68,82 @@
                             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
                             <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
             <div class="row text-center">
             </div>
         </div>
     </div>
+    <!-- 引入接口文件 -->
+    <script src="./libs/http.js"></script>
+    <script type="text/html" id="list">
+        <option value="">所有分类</option>
+        {{each data}}
+        <option value='{{$value.id}}'>{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script type="text/html" id="arr-list">
+        {{each data.data}}
+        <tr>
+            <td>{{$value.title}}</td>
+            <td>{{$value.author}}</td>
+            <td>{{$value.category}}</td>
+            <td class="text-center">{{$value.date}}</td>
+            <td class="text-center">{{$value.state}}</td>
+            <td class="text-center">
+                <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script>
+        //入口函数
+        $(function () {
+            //当页面一加载 马上发送ajax请求 拉取服务器所有分类信息数据 渲染下拉列表
+            $.get({
+                //5、所有文章类别接口
+                url: BigNew.category_list,
+                //请求成功后 执行函数
+                success: function (res) {
+                    // console.log(res); 把获取到的数据的id 和名字写入模板引擎
+
+                    //用模板引擎的template('模板id',数据)方法 把数据渲染到页面中
+                    const htmlStr = template('list', res);
+                    $('#selCategory').html(htmlStr);
+                }
+            })
+        });
+        //当页面一加载,除了加载分类下拉分类按钮 也要渲染文章列表数据
+        //根据第几页获取服务器数据 渲染到页面
+
+        //接口文件可知道page 代表当前页数 perpage 代表一页要存放的数据条数
+        //默认第一页 一页10条数据
+        const page = 1;
+        const perpage = 10;
+        //发送get请求获取接口数据
+        $.get({
+            //10、文章搜索接口
+            url: BigNew.article_query,
+            // 返回的数据 page:当前页 perpage:每页显示条数
+            data: {
+                //因为在前面给page默认值10 当前页:1
+                page: page,
+                //因为在前面给perpage默认值10 每页显示条数:10
+                perpage: perpage
+            },
+            //请求文章列表数据完成时
+            success: function (res) {
+                //判断状态码如果200 则可以认为执行完毕
+                if (res.code === 200) {
+                    // console.log(res);
+                    const htmlStr = template('arr-list', res);
+                    $('tbody').html(htmlStr);
+                }
+            }
+        })
+    </script>
 </body>
 
 </html>
