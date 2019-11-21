@@ -92,8 +92,8 @@
             <td class="text-center">{{$value.date}}</td>
             <td class="text-center">{{$value.state}}</td>
             <td class="text-center">
-                <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+                <a href="article_edit.html?id={{$value.id}}" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:void(0);" data-id='{{$value.id}}' class="btn btn-danger btn-xs delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -186,9 +186,61 @@
             })
 
 
-            //给删除按钮绑定点击事件
+            //事件委派 给删除按钮绑定点击事件
             $('tbody').on('click', '.btn-danger', function () {
-                console.log('点击了');
+                // console.log('点击了');
+                //因为事件委派返回的是伪数组 所以this代表点击的那一个元素
+                const id = $(this).attr('data-id');
+                // console.log(id);
+                //调用DOM方法 询问用户是否真的删除 此方法根据用户选择返回布尔值
+                const xZ = confirm('请注意,此操作删除文章后不可恢复,您确定要删除?')
+                // console.log(xZ);
+                //判断用户选择是否删除 如果是 则为ture 执行删除
+                if (xZ === true) {
+                    //向服务器发送请求
+                    $.post({
+                        //14、删除文章 接口
+                        url: BigNew.article_delete,
+                        //根据用户点击的this 获取的id 发送给服务器执行删除
+                        data: {
+                            id: id
+                        },
+                        //服务器返回数据 执行函数
+                        success: function (res) {
+                            // console.log(res);
+                            //判断状态码是否为204  204代表完全服务器响应完毕(删除完成)
+                            if (res.code === 204) {
+                                //再次向服务器请求数据(刷新页面)
+                                $.get({
+                                    //10、文章搜索 接口
+                                    url: BigNew.article_query,
+                                    //data根据用户当前页面数据 向服务器发起请求返回相应的数据
+                                    data: {
+                                        //当前选择的文章类别
+                                        type: $('#selCategory').val(),
+                                        //当前选择的文章状态
+                                        state: $('#selStatus').val(),
+                                        //当前页面
+                                        page: mypage,
+                                        //每页显示10条数据
+                                        perpage: perpage
+                                    },
+                                    //监听服务器响应
+                                    success: function (res) {
+                                        // console.log(res);
+                                        //状态码200 代表服务器响应完毕
+                                        if (res.code === 200) {
+                                            //把返回的数据渲染到页面
+                                            const htmlStr = template('arr-list',
+                                                res);
+                                            $('tbody').html(htmlStr);
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
 
             })
 
