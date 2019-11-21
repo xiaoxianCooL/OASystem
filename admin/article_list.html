@@ -36,8 +36,8 @@
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option value="">所有状态</option>
-                            <option value="草稿">草稿</option>
-                            <option value="已发布">已发布</option>
+                            <option id="category01" value="草稿">草稿</option>
+                            <option id="category02" value="已发布">已发布</option>
                         </select>
                         <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
                     </form>
@@ -114,35 +114,87 @@
                     $('#selCategory').html(htmlStr);
                 }
             })
-        });
-        //当页面一加载,除了加载分类下拉分类按钮 也要渲染文章列表数据
-        //根据第几页获取服务器数据 渲染到页面
 
-        //接口文件可知道page 代表当前页数 perpage 代表一页要存放的数据条数
-        //默认第一页 一页10条数据
-        const page = 1;
-        const perpage = 10;
-        //发送get请求获取接口数据
-        $.get({
-            //10、文章搜索接口
-            url: BigNew.article_query,
-            // 返回的数据 page:当前页 perpage:每页显示条数
-            data: {
-                //因为在前面给page默认值10 当前页:1
-                page: page,
-                //因为在前面给perpage默认值10 每页显示条数:10
-                perpage: perpage
-            },
-            //请求文章列表数据完成时
-            success: function (res) {
-                //判断状态码如果200 则可以认为执行完毕
-                if (res.code === 200) {
-                    // console.log(res);
-                    const htmlStr = template('arr-list', res);
-                    $('tbody').html(htmlStr);
+
+            //当页面一加载,除了加载分类下拉分类按钮 也要渲染文章列表数据
+            //根据第几页获取服务器数据 渲染到页面
+
+            //接口文件可知道page 代表当前页数 perpage 代表一页要存放的数据条数
+            //默认第一页 一页10条数据
+            const mypage = 1;
+            const perpage = 10;
+            //发送get请求获取接口数据
+            $.get({
+                //10、文章搜索接口
+                url: BigNew.article_query,
+                // 返回的数据 page:当前页 perpage:每页显示条数
+                data: {
+                    //因为在前面给page默认值10 当前页:1
+                    page: mypage,
+                    //因为在前面给perpage默认值10 每页显示条数:10
+                    perpage: perpage
+                },
+                //请求文章列表数据完成时
+                success: function (res) {
+                    //判断状态码如果200 则可以认为执行完毕
+                    if (res.code === 200) {
+                        // console.log(res);
+                        //用模板引擎的template('模板id',数据)方法 把数据渲染到页面中
+                        const htmlStr = template('arr-list', res);
+                        $('tbody').html(htmlStr);
+                    }
                 }
-            }
-        })
+            })
+
+            //为筛选按钮绑定事件
+
+            $('#btnSearch').on('click', function (e) {
+                //阻止按钮点击刷新的默认行为
+                e.preventDefault();
+                //获取文章类别框用户要筛选的事件类型
+                const category = $('#selCategory').val();
+                //获取文章状态框 用户选择要筛选的文章状态
+                const condition = $('#selStatus').val();
+                //点击后发送get请求 拉取服务器数据
+                $.get({
+                    //10、文章搜索 接口
+                    url: BigNew.article_query,
+                    //传入参数向服务器请求相应的数据
+                    data: {
+                        //传入需要获取的文章类型
+                        type: category,
+                        //传入需要获取的文章状态类型
+                        state: condition,
+                        //当前页 因为不确定用户会在第几页点击这个按钮 设置用户点击后就默认从第一页开始预览
+                        page: 1,
+                        //上面全局定了变量 直接拿过来用 每页显示条数10
+                        perpage: perpage
+                    },
+                    //请求发送后 执行函数
+                    success: function (res) {
+                        // console.log(res);
+                        //判断如果状态码为200 则可以认为完全执行完毕
+                        if (res.code === 200) {
+                            //把服务器根据要求 返回的数据填入到模板引擎  渲染到页面中
+                            const htmlStr = template('arr-list', res);
+                            $('tbody').html(htmlStr);
+                        }
+                    }
+                })
+
+
+            })
+
+
+            //给删除按钮绑定点击事件
+            $('tbody').on('click', '.btn-danger', function () {
+                console.log('点击了');
+
+            })
+
+
+
+        });
     </script>
 </body>
 
