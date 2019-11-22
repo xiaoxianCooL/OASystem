@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -14,8 +14,9 @@
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
     <!-- 引入bootstrap的js文件 -->
+    <link rel="stylesheet" href="./libs/bootstrap/js/bootstrap.min.js">
     <!-- 引入jQuery的分页插件js文件 -->
-    <!-- 引入模板引擎js文件 -->
+
 </head>
 
 <body>
@@ -72,9 +73,12 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <!-- 页码条 -->
+                <ul id="pagination-demo" class="pagination-sm"></ul>
             </div>
         </div>
     </div>
+    <script src="./libs/jquery.twbsPagination.js"></script>
     <!-- 引入接口文件 -->
     <script src="./libs/http.js"></script>
     <script type="text/html" id="list">
@@ -129,6 +133,8 @@
                 url: BigNew.article_query,
                 // 返回的数据 page:当前页 perpage:每页显示条数
                 data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
                     //因为在前面给page默认值10 当前页:1
                     page: mypage,
                     //因为在前面给perpage默认值10 每页显示条数:10
@@ -137,12 +143,51 @@
                 //请求文章列表数据完成时
                 success: function (res) {
                     //判断状态码如果200 则可以认为执行完毕
+                    // console.log("res", res)
                     if (res.code === 200) {
-                        // console.log(res);
+                        console.log(res);
                         //用模板引擎的template('模板id',数据)方法 把数据渲染到页面中
                         const htmlStr = template('arr-list', res);
                         $('tbody').html(htmlStr);
+
+
+                        // 引入分页插件中的方法生成页码条
+                        $('#pagination-demo').twbsPagination({
+                            totalPages: res.data.totalPage,
+                            visiblePages: 7,
+                            first: '首页',
+                            prev: '上一页',
+                            next: '下一页',
+                            last: '尾页',
+                            onPageClick: function (event, page) {
+                                // console.log(page);
+                                // 当点击页码数的时候，我们要获取到当前的页码数
+                                // console.log(page);
+                                if (page === 1) {
+                                    return;
+                                }
+                                myPage = page;
+                                // console.log(page);
+                                $.get({
+                                    url: BigNew.article_query,
+                                    data: {
+                                        type: $('#selCategory').val(),
+                                        state: $('#selStatus').val(),
+                                        page: myPage,
+                                        perpage: perpage
+                                    },
+                                    success: function (res) {
+                                        // console.log(res);
+                                        var htmlStr = template('art-list',
+                                            res);
+                                        $('tbody').html(htmlStr);
+                                    }
+                                })
+                            }
+                        });
                     }
+                    // console.log(res);
+
                 }
             })
 
@@ -161,9 +206,9 @@
                     url: BigNew.article_query,
                     //传入参数向服务器请求相应的数据
                     data: {
-                        //传入需要获取的文章类型
+                        //传入参数请求服务器返回需要获取的文章类型
                         type: category,
-                        //传入需要获取的文章状态类型
+                        //传入参数请求服务器返回需要获取的文章状态类型
                         state: condition,
                         //当前页 因为不确定用户会在第几页点击这个按钮 设置用户点击后就默认从第一页开始预览
                         page: 1,
