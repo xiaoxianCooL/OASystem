@@ -145,42 +145,56 @@
                     //判断状态码如果200 则可以认为执行完毕
                     // console.log("res", res)
                     if (res.code === 200) {
-                        console.log(res);
+                        // console.log(res);
                         //用模板引擎的template('模板id',数据)方法 把数据渲染到页面中
                         const htmlStr = template('arr-list', res);
                         $('tbody').html(htmlStr);
-
-
-                        // 引入分页插件中的方法生成页码条
+                        //-------------------------------------------------------
+                        // 引入分页插件中的方法在id为pagination-demo 的 ul html标签内 生成页码条
                         $('#pagination-demo').twbsPagination({
+                            //把数据的页数传进来 res.data.totalPage  (totalPage)数据的总页数
                             totalPages: res.data.totalPage,
                             visiblePages: 7,
+                            //修改页条码的按钮文字
                             first: '首页',
                             prev: '上一页',
                             next: '下一页',
                             last: '尾页',
+                            // 当点击页码数的时候，我们要获取到当前的页码数
                             onPageClick: function (event, page) {
                                 // console.log(page);
-                                // 当点击页码数的时候，我们要获取到当前的页码数
-                                // console.log(page);
+                                //判断 如果已经是第一页了 就不要再次请求服务器的数据了(减少服务器的压力)
                                 if (page === 1) {
                                     return;
                                 }
+                                //把用户点击的页数 赋值给当前页数进行跳转
                                 myPage = page;
-                                // console.log(page);
+                                //然后向服务器请求 用户点击的那一页数据
                                 $.get({
+                                    //10、文章搜索接口 
                                     url: BigNew.article_query,
+                                    // 把用户选择的文章类型 状态类型传给服务器 让服务器筛选后 返回相应的数据
                                     data: {
+                                        //用户选择的文章类型
                                         type: $('#selCategory').val(),
+                                        //用户选择的文章状态
                                         state: $('#selStatus').val(),
+                                        //用户点击的页数
                                         page: myPage,
+                                        //把我们要在一个页面里面显示多少条数据 传给服务器
                                         perpage: perpage
                                     },
+                                    //监听服务器响应
                                     success: function (res) {
                                         // console.log(res);
-                                        var htmlStr = template('art-list',
-                                            res);
-                                        $('tbody').html(htmlStr);
+                                        //如果状态码为200 则可以认为请求成功 服务器返回了数据
+                                        if (res.code === 200) {
+                                            //渲染到页面
+                                            var htmlStr = template(
+                                                'arr-list',
+                                                res);
+                                            $('tbody').html(htmlStr);
+                                        }
                                     }
                                 })
                             }
@@ -223,6 +237,18 @@
                             //把服务器根据要求 返回的数据填入到模板引擎  渲染到页面中
                             const htmlStr = template('arr-list', res);
                             $('tbody').html(htmlStr);
+                            //如果有数据 显示页码条
+                            $('#pagination-demo').show();
+                            //根据服务器返回的数据动态显示页码条数据
+                            $('#pagination-demo').twbsPagination('changeTotalPages', res
+                                .data.totalPage, 1);
+                        } else {
+                            //如果没有数据 提示用户没有数据~
+                            $('tbody').html(
+                                '<tr><td style="text-align: center;color:red;font-size: 24px" colspan=6>亲，没有数据了哦</td></tr>'
+                            );
+                            //把分页条隐藏!!!!
+                            $('#pagination-demo').hide();
                         }
                     }
                 })
@@ -279,6 +305,11 @@
                                             const htmlStr = template('arr-list',
                                                 res);
                                             $('tbody').html(htmlStr);
+                                            // 删除完成后 根据服务器返回的数据动态更新页码条页数
+                                            $('#pagination-demo')
+                                                .twbsPagination(
+                                                    'changeTotalPages', res.data
+                                                    .totalPage, 1);
                                         }
                                     }
                                 })
