@@ -14,18 +14,26 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 引入时间插件 -->
+    <!-- 时间插件样式 -->
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
+    <!-- 时间插件js -->
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <!-- 引入富文本插件 -->
+    <script src="./libs/wangEditor.js"></script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="common_title">
-            文章编辑
+            文章发布
         </div>
         <div class="container-fluid common_con">
             <form class="form-horizontal article_form" id="form">
                 <div class="form-group">
                     <label for="inputTitle" class="col-sm-2 control-label">文章标题：</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <input type="text" name="title" class="form-control title" id="inputTitle" value="文章标题文字">
                     </div>
                 </div>
@@ -38,35 +46,122 @@
                 </div>
                 <div class="form-group">
                     <label for="inputCategory" class="col-sm-2 control-label">文章类别：</label>
-                    <div class="col-sm-4">
-                        <select class="form-control category" name="categoryId">
-                            <option>类别一</option>
+                    <div class="col-sm-2">
+                        <select class="form-control category" id="categoryId">
+                            <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
                             <option selected>类别四</option>
-                            <option>类别五</option>
+                            <option>类别五</option> -->
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
-                    <div class="col-sm-4">
+                    <div class="jeinpbox" class="col-sm-4">
+                        <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                        <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD'})">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
-                    <div class="col-sm-10">
+                    <div id="editor" class="col-sm-8">
+                        <p><b>欢迎使用本后台系统!!!</b></p>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success btn-release">发布</button>
-                        <button type="submit" class="btn btn-default btn-draft">存为草稿</button>
+                        <button type="submit" class="btn btn-success btn-release" id="fabu">发布</button>
+                        <button type="submit" class="btn btn-default btn-draft" id="caogao">存为草稿</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <!-- 引入接口 -->
+    <script src="./libs/http.js"></script>
+    <script type="text/html" id="templates">
+        {{each data}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+        //入口函数
+        $(function () {
+
+            //给上传封面按钮添加change事件
+            $('#inputCover').on('change', function () {
+                //files返回一个合集. 每个file对应着上传的每个文件对象 用索引号提取<集合>里对应文件的对象
+                const img = this.files[0];
+                //把图片对象转换为字符串地址
+                const url = URL.createObjectURL(img);
+                // console.log(url);
+                //替换预览区的图片地址
+                $('.article_cover').attr('src', url)
+            })
+
+
+            // 时间插件
+            jeDate("#testico", {
+                isinitVal: true,
+                festival: true,
+                format: 'YYYY-MM-DD'
+            });
+
+
+            //富文本编辑器
+            var E = window.wangEditor
+            var editor = new E('#editor')
+            // 或者 var editor = new E( document.getElementById('editor') )
+            editor.create()
+
+            //获取文章类别数据
+            $.get({
+                // 
+                url: BigNew.category_list,
+                success: function (res) {
+                    // console.log(res);
+                    if (res.code === 200) {
+                        const htmlStr = template('templates', res);
+                        $('select.category').html(htmlStr)
+                    }
+                }
+            })
+            //当点击发布按钮时 向服务器提交表单数据
+            // console.log($('#fabu'));
+            $('#fabu').on('click', function (e) {
+                // console.log(11);
+                e.preventDefault();
+                // console.log($('#form'));
+                var form = $('#form')[0];
+                // console.log(form);
+                var n1 = new FormData(form);
+                n1.append('content', editor.txt.html());
+                n1.append('state', '已发布');
+                n1.append("categoryId", $("#categoryId").val())
+                n1.append("date", $("#testico").val())
+                //发送数据
+                $.post({
+                    url: BigNew.article_publish,
+                    data: n1,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+
+
+
+
+
+
+
+        })
+    </script>
 </body>
 
 </html>

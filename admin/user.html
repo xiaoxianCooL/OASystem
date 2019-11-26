@@ -95,12 +95,14 @@
 
       //为上传按钮绑定change事件 当选择好图片后,在页面显示预览效果
       $("#exampleInputFile").on("change", function () {
-        // console.log(this);
-        //将选择的图片转换成一个url地址 files返回的是伪数组 用[0]提取对象
+        console.log(this.files);
+        //files方法返回一个files对象的<集合>,每个files对象对应着每一个文件 只上传一张图片用[0]提取该图片的对象 信息
         var imgIcon = this.files[0];
-        //因为window有URL对象 调用此对象createobjectURL方法,将图片的信息转换为url地址
+        console.log(imgIcon);
+
+        //因为window有URL对象 调用url对象createobjectURL方法,将图片的 信息 转换为一个字符串的 url地址
         var url = URL.createObjectURL(imgIcon);
-        // console.log(url);
+        console.log(url);
 
         // console.log(url);
         //把预览图片的路径替换为上传的那一张
@@ -113,12 +115,13 @@
         //阻止submit按钮默认刷新行为
         e.preventDefault();
         //获取form表单信息
-        //获取form表单 formData只能处理原生的DOM对象
+        //获取form表单 formData只能处理原生的DOM对象 处理为二进制
         var form = $('#form')[0];
+        // 我们使用formData获取表单中的数据的时候，这个表单元素必须有name属性
+        // 数据中缺少content和state的数据
         var userData = new FormData(form);
         // console.log(form);
         // console.log(userData);
-
 
         //发送ajax请求提交form表单数据  修改服务器数据
         $.post({
@@ -128,7 +131,7 @@
           data: userData,
           //不需要设置请求头
           contentType: false,
-          //不需要进行编码
+          //阻止编码
           processData: false,
           //请求成功后执行函数
           success: function (res) {

@@ -155,6 +155,7 @@
                             //把数据的页数传进来 res.data.totalPage  (totalPage)数据的总页数
                             totalPages: res.data.totalPage,
                             visiblePages: 7,
+                            initiateStartPageClick: false,
                             //修改页条码的按钮文字
                             first: '首页',
                             prev: '上一页',
@@ -164,9 +165,9 @@
                             onPageClick: function (event, page) {
                                 // console.log(page);
                                 //判断 如果已经是第一页了 就不要再次请求服务器的数据了(减少服务器的压力)
-                                if (page === 1) {
-                                    return;
-                                }
+                                // if (page === 1) {
+                                //     return;
+                                // }
                                 //把用户点击的页数 赋值给当前页数进行跳转
                                 myPage = page;
                                 //然后向服务器请求 用户点击的那一页数据
@@ -232,7 +233,7 @@
                     //请求发送后 执行函数
                     success: function (res) {
                         // console.log(res);
-                        //判断如果状态码为200 则可以认为完全执行完毕
+                        //判断如果状态码为200 则可以认为完全执行完毕 且数据长度不为0 执行
                         if (res.code === 200 && res.data.data.length != 0) {
                             //把服务器根据要求 返回的数据填入到模板引擎  渲染到页面中
                             const htmlStr = template('arr-list', res);
@@ -243,7 +244,7 @@
                             $('#pagination-demo').twbsPagination('changeTotalPages', res
                                 .data.totalPage, 1);
                         } else {
-                            //如果没有数据 提示用户没有数据~
+                            //如果状态码为200 而数据的长度为0 才 执行提示用户没有数据~
                             $('tbody').html(
                                 '<tr><td style="text-align: center;color:red;font-size: 24px" colspan=6>当前分类下没有数据!</td></tr>'
                             );

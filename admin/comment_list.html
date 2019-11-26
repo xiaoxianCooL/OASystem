@@ -142,7 +142,7 @@
         </tbody>
       </table>
       <div class="row text-center">
-        <ul class="pagination pagination-sm">
+        <!-- <ul class="pagination pagination-sm">
           <li class="page-item first disabled"><a href="#" class="page-link">首页</a></li>
           <li class="page-item prev disabled"><a href="#" class="page-link">上一页</a></li>
           <li class="page-item active"><a href="#" class="page-link">1</a></li>
@@ -154,12 +154,25 @@
           <li class="page-item"><a href="#" class="page-link">7</a></li>
           <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
           <li class="page-item last"><a href="#" class="page-link">尾页</a></li>
-        </ul>
+        </ul> -->
         <ul id="pagination" class="pagination-sm"></ul>
       </div>
 
     </div>
   </div>
 </body>
+<script src="./libs/http.js"></script>
+<script>
+  $(function () {
+    //进入页面向服务器发送获取数据请求
+    $.get({
+      url: 'http://localhost:8080/api/v1/index/latest_comment',
+      success: function (res) {
+        // console.log(res);
+
+      }
+    })
+  })
+</script>
 
 </html>
