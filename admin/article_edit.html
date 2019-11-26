@@ -82,10 +82,20 @@
     <script>
         // 入口函数
         $(function () {
+            //为上传按钮注册change事件
+            $('#inputCover').on('change', function (e) {
+                //阻止上传按钮的点击默认刷新事件
+                e.preventDefault();
+                //提取上传的图片的属性 files返回的是一个合集 里面的file对应着每张图片 用索引提取当前图片对象
+                var img = this.files[0]
+                // console.log(img);
+                // 调用URL对象的createobjiectURL方法 把图片对象转为字符串地址
+                var url = URL.createObjectURL(img);
+                // console.log(url);
+                //把图片渲染到预览区 
+                $('.article_cover').attr('src', url)
 
-
-
-
+            })
 
             // 时间插件
             jeDate("#testico", {
@@ -97,9 +107,44 @@
 
             //富文本编辑器
             var E = window.wangEditor
+
             var editor = new E('#editor')
             // 或者 var editor = new E( document.getElementById('editor') )
             editor.create()
+
+
+
+            //从列表页点击编辑按钮跳转过来后 获取本地储存里面的search属性===获取该文章的id值(字符串)
+            var id = qiegeobj(location.search)
+            // console.log(id);
+            // console.log(location.search);
+            //封装一个切割字符串的方法
+            function qiegeobj(str) {
+                //从第一个元素开始选取到最后 返回新的字符串
+                str = str.slice(1);
+                //把字符串按特定字符分割 转换成一个字符串数组
+                searcharr = str.split('&')
+                //创建一个空的对象
+                var obj = {}
+                //遍历字符串数组
+                for (const key in searcharr) {
+                    //再把数组里面的字符串分割
+                    var timi = searcharr[key].split('=')
+                    //分割后把值赋值给obj对象的属性
+                    obj[timi[0]] = timi[1]
+                }
+                //返回对象
+                return obj
+            }
+            // console.log(id);
+
+
+
+
+
+
+
+
 
         })
     </script>
