@@ -72,8 +72,8 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success btn-edit">修改</button>
-                        <button type="submit" class="btn btn-default btn-draft">存为草稿</button>
+                        <button id="xiugai" type="submit" class="btn btn-success btn-edit">修改</button>
+                        <button id="caogao" type="submit" class="btn btn-default btn-draft">存为草稿</button>
                     </div>
                 </div>
             </form>
@@ -165,11 +165,11 @@
                 },
                 //请求成功时 执行函数
                 success: function (res) {
-                    console.log(res);
+                    // console.log(res);
                     //判断状态码 如果是200则认为执行完毕
                     if (res.code === 200) {
                         // 把文章id储存到隐藏域的value内
-                        console.log(res.data.categoryId)
+                        // console.log(res.data.categoryId)
                         $('#yincanId').val(res.data.id);
                         $('#inputTitle').val(res.data.title);
                         $('.article_cover').attr('src', res.data.cover);
@@ -181,6 +181,53 @@
                     }
                 }
             })
+
+            //修改按钮注册点击事件
+            $('#xiugai').on('click', function (e) {
+                //阻止提交按钮的默认行为
+                e.preventDefault()
+
+                //获取表单数据 我们要的是第一个表单的数据
+                var form = $('#form')[0];
+                // console.log($('#form'));
+                // console.log($('#form')[0]);
+                //表单的元素必须要有name属性
+                //把表单的数据转成二进制
+                var fd = new FormData(form)
+
+                //由于数据缺少content和state的数据
+                //content editor.txt.html() 富文本编辑器的数据
+                fd.append('content', editor.txt.html())
+                //state 要修改的文章状态为?
+                fd.append('state', '已发布');
+
+                //数据获取完毕 修改完毕后 向服务器发送post请求 修改服务器数据
+                // console.log(fd);
+
+                $.post({
+                    //文章编辑接口
+                    url: BigNew.article_edit,
+                    //传入修改后的数据到服务器
+                    data: fd,
+                    //由于表单已经二进制 阻止post编码
+                    processData: false,
+                    //不需要设置请求头
+                    contentType: false,
+                    //监听请求 成功后执行
+                    success: function (res) {
+                        console.log(res);
+
+                        //如果状态码为200 则认为执行成功
+                        if (res.code === 200) {
+                            //提示用户修改文章成功
+                            alert('修改成功')
+                        }
+                    }
+                })
+
+
+            })
+            // var n1 = $('#caogao')
 
 
 
