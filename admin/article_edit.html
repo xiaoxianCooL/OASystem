@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="jeinpbox" class="col-sm-4">
-                        <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                        <input name="date" type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
                         <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD'})">
                         </div>
                     </div>
@@ -215,19 +215,54 @@
                     contentType: false,
                     //监听请求 成功后执行
                     success: function (res) {
-                        console.log(res);
+                        // console.log(res);
 
-                        //如果状态码为200 则认为执行成功
+                        //如果状态码为200 则认为请求成功
                         if (res.code === 200) {
                             //提示用户修改文章成功
-                            alert('修改成功')
+                            alert('文章修改成功!')
+                            //history对象的方法 返回上一个url === 点击了浏览器的后退按钮
+                            history.back();
+                        }
+                    }
+                })
+            })
+
+
+            $('#caogao').on('click', function (e) {
+                //修改提交按钮默认事件
+                e.preventDefault()
+                //获取表单数据
+                var form = $('#form')[0];
+                //把表单数据转为二进制
+                var fd = new FormData(form)
+                //数据中缺少content和state的数据 由于state不设置'已发布'状态的话 默认就是'草稿'状态 所以不设置了
+                //数据中缺少富文本编辑器插件的content数据 添加上
+                fd.append('content', editor.txt.html());
+
+                //发送post请求将数据添加到数据库中
+                $.post({
+                    //文章编辑接口
+                    url: BigNew.article_edit,
+                    //传入修改后的表单数据到服务器
+                    data: fd,
+                    //由于表单已经进行了二进制编码 阻止默认编码
+                    processData: false,
+                    //阻止发送请求头
+                    contentType: false,
+                    //监听状态码 如果成功执行
+                    success: function (res) {
+                        //如果状态码为200 则认为请求成功
+                        if (res.code === 200) {
+                            //提示用户
+                            alert('已经保存到草稿')
+                            //history对象的方法 返回上一个url === 点击了浏览器的后退按钮
+                            history.back();
                         }
                     }
                 })
 
-
             })
-            // var n1 = $('#caogao')
 
 
 
