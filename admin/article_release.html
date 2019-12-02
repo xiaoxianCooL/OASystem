@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label for="inputCategory" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-2">
-                        <select class="form-control category" id="categoryId">
+                        <select class="form-control category" name="categoryId">
                             <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="jeinpbox" class="col-sm-4">
-                        <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                        <input type="text" name="date" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
                         <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD'})">
                         </div>
                     </div>
@@ -119,12 +119,16 @@
 
             //获取文章类别数据
             $.get({
-                // 
+                // 文章类别查询 接口
                 url: BigNew.category_list,
+                //请求发送成功时.执行
                 success: function (res) {
                     // console.log(res);
+                    //如果状态码为200 则认为执行成功
                     if (res.code === 200) {
+                        //把服务器返回的数据写入模板
                         const htmlStr = template('templates', res);
+                        //把模板渲染到页面上
                         $('select.category').html(htmlStr)
                     }
                 }
@@ -133,23 +137,41 @@
             // console.log($('#fabu'));
             $('#fabu').on('click', function (e) {
                 // console.log(11);
+                //阻止提交按钮的默认事件
                 e.preventDefault();
                 // console.log($('#form'));
+                //获取的是第一个表单的数据
                 var form = $('#form')[0];
                 // console.log(form);
+                //把获取到的表单数据转换成二进制数据
                 var n1 = new FormData(form);
+                //由于需要传的数据参数中缺少content属性(富文本编辑器),state属性(文章状态) 安排上
                 n1.append('content', editor.txt.html());
                 n1.append('state', '已发布');
-                n1.append("categoryId", $("#categoryId").val())
-                n1.append("date", $("#testico").val())
-                //发送数据
+                //缺少name值 (已经修复)
+                // n1.append("categoryId", $("#categoryId").val())
+                // n1.append("date", $("#testico").val())
+
+                //数据填写完毕后 向服务器发起post请求
                 $.post({
+                    //文章发布接口
                     url: BigNew.article_publish,
+                    //获取到的表单数据 传给服务器
                     data: n1,
+                    //由于表单已经进行了二进制编码 不需要再编码
                     contentType: false,
+                    //也不需要设置请求头
                     processData: false,
+                    //监听状态  成功时执行
                     success: function (res) {
-                        console.log(res);
+                        // console.log(res);
+                        //如果状态码为200 则认为请求成功
+                        if (res.code === 200) {
+                            //提示用户
+                            alert('文章发布成功!')
+                            //发布成功后.回跳到文章列表页面
+                            location.href = './article_list.html';
+                        }
                     }
                 })
             })
