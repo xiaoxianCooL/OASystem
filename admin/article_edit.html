@@ -29,6 +29,8 @@
         </div>
         <div class="container-fluid common_con">
             <form class="form-horizontal article_form" id="form">
+                <!-- 隐藏域 -->
+                <input type="hidden" name="id" id="yincanId">
                 <div class="form-group">
                     <label for="inputTitle" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
@@ -45,12 +47,12 @@
                 <div class="form-group">
                     <label for="inputCategory" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control category" name="categoryId">
-                            <option>类别一</option>
+                        <select class="form-control category" name="categoryId" id="leibieId">
+                            <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
                             <option selected>类别四</option>
-                            <option>类别五</option>
+                            <option>类别五</option> -->
                         </select>
                     </div>
                 </div>
@@ -78,7 +80,11 @@
         </div>
     </div>
     <script src="./libs/http.js"></script>
-
+    <script type="text/html" id="list">
+        {{each data}}
+        <option value='{{$value.id}}'>{{$value.name}}</option>
+        {{/each}}
+    </script>
     <script>
         // 入口函数
         $(function () {
@@ -112,10 +118,21 @@
             // 或者 var editor = new E( document.getElementById('editor') )
             editor.create()
 
+            //获取文章分类信息
+            $.get({
+                url: BigNew.category_list,
+                success: function (res) {
+                    console.log(res);
 
+                    if (res.code === 200) {
+                        var htmlStr = template('list', res)
+                        $('#leibieId').html(htmlStr)
+                    }
+                }
+            })
 
             //从列表页点击编辑按钮跳转过来后 获取本地储存里面的search属性===获取该文章的id值(字符串)
-            var id = qiegeobj(location.search)
+            var wenZhanId = qiegeobj(location.search).id
             // console.log(id);
             // console.log(location.search);
             //封装一个切割字符串的方法
@@ -136,9 +153,34 @@
                 //返回对象
                 return obj
             }
-            // console.log(id);
+            // console.log(wenZhanId);
+
+            //拿到id后 发送ajax请求  根据用户传过来的id获取整篇文章的内容
+            $.get({
+                //12,根据id获取文章信息接口
+                url: BigNew.article_search,
+                //传入id参数
+                data: {
+                    id: wenZhanId
+                },
+                //请求成功时 执行函数
+                success: function (res) {
+                    console.log(res);
+                    //判断状态码 如果是200则认为执行完毕
+                    if (res.code === 200) {
+                        // 把文章id储存到隐藏域的value内
+                        console.log(res.data.categoryId)
+                        $('#yincanId').val(res.data.id);
+                        $('#inputTitle').val(res.data.title);
+                        $('.article_cover').attr('src', res.data.cover);
+                        $('#leibieId').attr("value", res.data.categoryld);
+                        $('#testico').val(res.data.date);
+                        editor.txt.html(res.data.content);
 
 
+                    }
+                }
+            })
 
 
 
