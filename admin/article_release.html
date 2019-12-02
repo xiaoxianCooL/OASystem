@@ -177,7 +177,38 @@
             })
 
 
-
+            //当用户点击存到草稿时 向服务器发起请求提交表单
+            $('#caogao').on('click', function (e) {
+                //阻止提交按钮的默认事件
+                e.preventDefault()
+                //获取我们要的当前页面的第一个表单数据
+                var form = $('#form')[0];
+                //把获取到的表单数据 转换成二进制数据
+                var n1 = new FormData(form);
+                //由于表单数据中缺少了content属性(富文本编辑器插件),和state属性(文章状态),又因为如果不设置状态 默认是草稿状态 所以我们在写草稿功能的时候 可以不添加
+                n1.append('content', editor.txt.html());
+                //把用户填写的表单数据发送到服务器储存
+                $.post({
+                    //文章发布接口
+                    url: BigNew.article_publish,
+                    //把用户填写的数据发送到服务器
+                    data: n1,
+                    //因为表单数据已经进过二进制转换 不需要编码
+                    processData: false,
+                    //也不需要请求头
+                    contentType: false,
+                    //监听请求 成功时执行
+                    success: function (res) {
+                        //如果状态码为200 则认为请求成功
+                        if (res.code === 200) {
+                            //提示用户
+                            alert('文章已经保存到草稿!')
+                            //然后回跳到文章列表
+                            location.href = './article_list.html';
+                        }
+                    }
+                })
+            })
 
 
 
